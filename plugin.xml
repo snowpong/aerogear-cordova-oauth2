@@ -16,6 +16,8 @@
   <dependency id="com.vladstirbu.cordova.promise" url="https://github.com/vstirbu/PromisesPlugin.git"/>
 
   <platform name="android">
+    <framework src="com.android.support:appcompat-v7:+"/>
+
     <dependency id="org.jboss.aerogear.cordova.android.reflect" url="https://github.com/edewit/aerogear-reflect-cordova.git"/>
     <config-file target="res/xml/config.xml" parent="/*">
       <feature name="OAuth2Plugin">

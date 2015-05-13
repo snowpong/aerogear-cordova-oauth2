@@ -118,6 +118,16 @@ public class OAuth2Plugin extends BasePlugin {
     return true;
   }
 
+
+  public boolean deleteAccount(String name, final CallbackContext callbackContext) {
+    Log.d(TAG, "deleting account");
+
+    final AuthzModule module = AuthorizationManager.getModule(name);
+    module.deleteAccount();
+    callbackContext.success("Deleted Account");
+    return true;
+  }
+
   public boolean requestAccessUsingPlayServices(JSONObject data, CallbackContext callbackContext) throws JSONException {
     cordova.setActivityResultCallback(this);
     if (OauthGoogleServicesIntentHelper.available) {

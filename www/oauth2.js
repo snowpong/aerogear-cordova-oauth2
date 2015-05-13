@@ -26,7 +26,11 @@ function enrich(that, object) {
     that[object.name] = {
     requestAccess: function () {
       return oauth2.requestAccess(object.name);
+    },
+    deleteAccount: function () {
+      return oauth2.deleteAccount(object.name);
     }
+
   }
   object.settings['accountId'] = object.name;
 }
@@ -171,6 +175,24 @@ OAuth2.prototype.requestAccess = function (accountId) {
     };
 
     cordova.exec(success, error, 'OAuth2Plugin', 'requestAccess', [accountId]);
+  });
+}
+
+OAuth2.prototype.deleteAccount = function (accountId) {
+  var success, error;
+
+  return new Promise(function (resolve, reject) {
+    error = function (error) {
+      reject({
+        error: error
+      });
+    };
+
+    success = function (result) {
+      resolve(result);
+    };
+
+    cordova.exec(success, error, 'OAuth2Plugin', 'deleteAccount', [accountId]);
   });
 }
 

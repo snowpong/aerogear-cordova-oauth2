@@ -31,9 +31,9 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
-
+import android.view.Window;
 import java.net.URL;
-
+import android.graphics.Color;
 /**
  * This is a WebView Dialog which is opened to a OAuth2 sign in page and sends
  * data back to the calling activity.
@@ -54,7 +54,7 @@ public class OAuthWebViewDialog extends DialogFragment {
         @Override
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
-
+            webView.setVisibility(View.VISIBLE);
             progressBar.setVisibility(View.GONE);
         }
 
@@ -199,7 +199,9 @@ public class OAuthWebViewDialog extends DialogFragment {
 
         webView = (WebView) v.findViewById(fakeR.getId("web_oauth"));
         webView.setScrollContainer(true);
-        getDialog().getWindow().setTitle("OAuth 2 Dialog");
+        webView.setBackgroundColor(Color.parseColor("#FFFFFF"));
+        getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+
         return v;
     }
 

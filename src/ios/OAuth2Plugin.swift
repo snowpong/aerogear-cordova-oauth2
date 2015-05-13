@@ -88,4 +88,22 @@ import Foundation
             }
         }
     }
+
+    func deleteAccount(command: CDVInvokedUrlCommand) {
+        let accountId = command.arguments[0] as String
+        let module = AccountManager.getAccountByName(accountId)
+
+        commandDelegate.runInBackground { () -> Void  in
+            if let module = module {
+                AccountManager.deleteAccount(accountId)
+
+                var commandResult:CDVPluginResult
+                
+                commandResult = CDVPluginResult(status: CDVCommandStatus_OK, messageAsString: "OK" as String)
+                
+                
+            }
+        }
+    }
+
 }
