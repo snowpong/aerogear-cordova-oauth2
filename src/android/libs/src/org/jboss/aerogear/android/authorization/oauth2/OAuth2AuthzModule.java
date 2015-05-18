@@ -88,7 +88,7 @@ public class OAuth2AuthzModule implements AuthzModule {
 
     @Override
     public void requestAccess(final Activity activity, final Callback<String> callback) {
-
+        System.out.println("In request Access Oauth2AuthzModule");
         final String state = UUID.randomUUID().toString();
 
         final OAuth2AuthzService.AGAuthzServiceConnection connection = new OAuth2AuthzService.AGAuthzServiceConnection() {
@@ -140,8 +140,11 @@ public class OAuth2AuthzModule implements AuthzModule {
 
     @Override
     public boolean refreshAccess() {
+                System.out.println("In refresh Access OAuth2AuthzModule");
 
         if (!hasAccount()) {
+            System.out.println("!hasAccount In refresh Access OAuth2AuthzModule");
+
             return false;
         } else {
 

@@ -83,12 +83,18 @@ public class OAuth2AuthzService extends Service {
         }
 
         if (!isNullOrEmpty(storedAccount.getAccessToken()) && storedAccount.tokenIsNotExpired()) {
+            System.out.println("Existing access token In fetchAccessToken OAuth2AuthzService");
+
             return storedAccount.getAccessToken();
         } else if (!isNullOrEmpty(storedAccount.getRefreshToken())) {
+            System.out.println("Refresh access token In fetchAccessToken OAuth2AuthzService");
+
             refreshAccount(storedAccount, config);
             sessionStore.save(storedAccount);
             return storedAccount.getAccessToken();
         } else if (!isNullOrEmpty(storedAccount.getAuthorizationCode())) {
+            System.out.println("Code token In fetchAccessToken OAuth2AuthzService");
+
             exchangeAuthorizationCodeForAccessToken(storedAccount, config);
             sessionStore.save(storedAccount);
             return storedAccount.getAccessToken();
