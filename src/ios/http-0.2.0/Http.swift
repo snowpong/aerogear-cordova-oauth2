@@ -513,7 +513,7 @@ public class Http {
                 return
             }
             
-            var response = task.response as NSHTTPURLResponse
+            var response = task.response as! NSHTTPURLResponse
             
             if  let downloadTask = task as? NSURLSessionDownloadTask {
                 completionHandler?(response, error)
@@ -570,14 +570,14 @@ public class Http {
         var resumeData: NSData?
         var destinationDirectory: String?
         
-        func URLSession(session: NSURLSession, downloadTask: NSURLSessionDownloadTask, didFinishDownloadingToURL location: NSURL) {
+        @objc func URLSession(session: NSURLSession, downloadTask: NSURLSessionDownloadTask, didFinishDownloadingToURL location: NSURL) {
             let filename = downloadTask.response?.suggestedFilename
             
             // calculate final destination
             var finalDestination: NSURL
             if (destinationDirectory == nil) {  // use 'default documents' directory if not set
                 // use default documents directory
-                var documentsDirectory  = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask)[0] as NSURL
+                var documentsDirectory  = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask)[0] as! NSURL
                 finalDestination = documentsDirectory.URLByAppendingPathComponent(filename!)
             } else {
                 // check that the directory exists

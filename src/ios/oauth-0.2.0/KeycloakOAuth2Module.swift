@@ -77,16 +77,16 @@ public class KeycloakOAuth2Module: OAuth2Module {
                 }
                 
                 if let unwrappedResponse = response as? [String: AnyObject] {
-                    let accessToken: String = unwrappedResponse["access_token"] as String
-                    let refreshToken: String = unwrappedResponse["refresh_token"] as String
-                    let expiration = unwrappedResponse["expires_in"] as NSNumber
+                    let accessToken: String = unwrappedResponse["access_token"] as! String
+                    let refreshToken: String = unwrappedResponse["refresh_token"] as! String
+                    let expiration = unwrappedResponse["expires_in"] as! NSNumber
                     let exp: String = expiration.stringValue
 
                     let base64Decoded = self.decode(refreshToken)
                     var refreshExp: String?
                     if let refreshtokenDecoded = base64Decoded {
-                        let refresh_iat = refreshtokenDecoded["iat"] as Int
-                        let refresh_exp = refreshtokenDecoded["exp"] as Int
+                        let refresh_iat = refreshtokenDecoded["iat"] as! Int
+                        let refresh_exp = refreshtokenDecoded["exp"] as! Int
                         let timeLeft = (refresh_exp - refresh_iat as NSNumber)
                         refreshExp = timeLeft.stringValue
                     }
@@ -108,7 +108,7 @@ public class KeycloakOAuth2Module: OAuth2Module {
         
         var stringtoDecode: String = toDecode.stringByReplacingOccurrencesOfString("-", withString: "+") // 62nd char of encoding
         stringtoDecode = stringtoDecode.stringByReplacingOccurrencesOfString("_", withString: "/") // 63rd char of encoding
-        switch (stringtoDecode.utf16Count % 4) {
+        switch (count(stringtoDecode.utf16) % 4) {
         case 2: stringtoDecode = "\(stringtoDecode)=="
         case 3: stringtoDecode = "\(stringtoDecode)="
         default: // nothing to do stringtoDecode can stay the same
