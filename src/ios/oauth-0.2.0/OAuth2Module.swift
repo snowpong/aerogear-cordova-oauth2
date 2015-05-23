@@ -41,7 +41,7 @@ enum AuthorizationState {
 /**
 Parent class of any OAuth2 module implementing generic OAuth2 authorization flow
 */
-public class OAuth2Module: NSObject, AuthzModule {
+public class OAuth2Module: NSObject, AuthzModule, UIWebViewDelegate {
     let config: Config
     var http: Http
 
@@ -49,7 +49,12 @@ public class OAuth2Module: NSObject, AuthzModule {
     var applicationLaunchNotificationObserver: NSObjectProtocol?
     var applicationDidBecomeActiveNotificationObserver: NSObjectProtocol?
     var state: AuthorizationState
-
+    var completionHandler: ((AnyObject?, NSError?) -> Void )?
+    var webView: UIWebView?
+    var toolbar: UIToolbar?
+    
+    var loginString: String?
+    
     /**
     Initialize an OAuth2 module
 
@@ -69,7 +74,7 @@ public class OAuth2Module: NSObject, AuthzModule {
         } else {
             self.oauth2Session = session!
         }
-
+        
         self.config = config
         // TODO use timeout config paramter
         self.http = Http(baseURL: config.baseURL, requestSerializer: requestSerializer, responseSerializer:  responseSerializer)
@@ -84,13 +89,7 @@ public class OAuth2Module: NSObject, AuthzModule {
     :param: completionHandler A block object to be executed when the request operation finishes.
     */
     public func requestAuthorizationCode(completionHandler: (AnyObject?, NSError?) -> Void) {
-        // register with the notification system in order to be notified when the 'authorization' process completes in the
-        // external browser, and the oauth code is available so that we can then proceed to request the 'access_token'
-        // from the server.
-        applicationLaunchNotificationObserver = NSNotificationCenter.defaultCenter().addObserverForName(AGAppLaunchedWithURLNotification, object: nil, queue: nil, usingBlock: { (notification: NSNotification!) -> Void in
-            self.extractCode(notification, completionHandler: completionHandler)
-        })
-
+        
         // register to receive notification when the application becomes active so we
         // can clear any pending authorization requests which are not completed properly,
         // that is a user switched into the app without Accepting or Cancelling the authorization
@@ -104,7 +103,9 @@ public class OAuth2Module: NSObject, AuthzModule {
                 self.state = .AuthorizationStateUnknown;
             }
         })
-
+        
+        self.completionHandler = completionHandler
+        
         // update state to 'Pending'
         self.state = .AuthorizationStatePendingExternalApproval
 
@@ -114,15 +115,77 @@ public class OAuth2Module: NSObject, AuthzModule {
         var url = NSURL(string: http.calculateURL(config.baseURL, url:config.authzEndpoint).absoluteString! + params)!
         
         dispatch_sync(dispatch_get_main_queue(), {
-            var webView = OAuth2WebView(frame: CGRectMake(10, 10, 1200, 3000))
-            println("Opening \(url)")
+            
+            var window = UIApplication.sharedApplication().delegate?.window!
+            var webView = UIWebView(frame: CGRectMake(5, 64, window!.frame.width - 10, window!.frame.height - 69))
+
             webView.loadRequest(NSURLRequest(URL: url))
-            UIApplication.sharedApplication().delegate?.window!?.addSubview(webView)
+            webView.delegate = self
+            
+            var toolbar = UIToolbar(frame: CGRectMake(5, 20, window!.frame.width - 10, 44))
+            var items = [UIBarButtonItem]()
+
+            self.webView = webView
+            self.toolbar = toolbar
+
+            
+            var closeItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Stop, target: self, action: Selector("closeWebView"))
+            
+            var spacer = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.FlexibleSpace, target: nil, action: nil)
+            
+            var rightSpacer = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.FixedSpace, target: nil, action: nil)
+            
+            rightSpacer.width = 7;
+            
+            
+            var label = UILabel(frame: CGRectMake(0, 0, 120, 44))
+            if let txt = self.loginString{
+                label.text = txt
+
+            }else{
+                label.text = "Logg inn"
+            }
+            
+            label.textAlignment = NSTextAlignment.Center
+            
+            
+            items.append(spacer)
+            items.append((UIBarButtonItem(customView: label)))
+            
+            items.append(spacer)
+            items.append(closeItem)
+            items.append(rightSpacer)
+            
+            toolbar.setItems(items, animated: true)
+            
+            window?.addSubview(toolbar)
+            window?.addSubview(webView)
+
+            
         })
         
         
     }
 
+    
+    func closeWebView(){
+        println("Closed view")
+        if let wv = self.webView{
+            wv.removeFromSuperview()
+        }
+        
+        if let tb = self.toolbar{
+            tb.removeFromSuperview()
+        }
+    }
+    
+    public func webView(webView: UIWebView, shouldStartLoadWithRequest request: NSURLRequest, navigationType: UIWebViewNavigationType) -> Bool {
+        self.extractCode(request.URL?.absoluteString, completionHandler: self.completionHandler!)
+
+        return true;
+    }
+    
+    
     /**
     Request to refresh an access token
 
@@ -264,6 +327,36 @@ public class OAuth2Module: NSObject, AuthzModule {
             completionHandler(response, nil)
         })
     }
+    
+    /**
+    Request to revoke access
+    
+    :param: completionHandler A block object to be executed when the request operation finishes.
+    */
+    public func clearTokens() {
+        // return if not yet initialized
+        if (self.oauth2Session.accessToken == nil) {
+            return;
+        }
+        self.oauth2Session.clearTokens()
+        self.clearCookies()
+    
+    }
+    
+    func clearCookies(){
+        var storage : NSHTTPCookieStorage = NSHTTPCookieStorage.sharedHTTPCookieStorage()
+
+        for cookie in storage.cookies  as! [NSHTTPCookie]{
+            storage.deleteCookie(cookie)
+        }
+
+        NSUserDefaults.standardUserDefaults().synchronize()
+        
+        for cookie in storage.cookies  as! [NSHTTPCookie]{
+            storage.deleteCookie(cookie)
+        }
+
+    }
 
     /**
     Return any authorization fields
@@ -289,8 +382,8 @@ public class OAuth2Module: NSObject, AuthzModule {
 
     // MARK: Internal Methods
 
-    func extractCode(notification: NSNotification, completionHandler: (AnyObject?, NSError?) -> Void) {
-        let url: NSURL? = (notification.userInfo as! [String: AnyObject])[UIApplicationLaunchOptionsURLKey] as? NSURL
+    func extractCode(urlString: String?, completionHandler: (AnyObject?, NSError?) -> Void) {
+        let url: NSURL? = NSURL(string: urlString!)
 
         // extract the code from the URL
         let code = self.parametersFromQueryString(url?.query)["code"]
@@ -299,13 +392,16 @@ public class OAuth2Module: NSObject, AuthzModule {
             self.exchangeAuthorizationCodeForAccessToken(code!, completionHandler: completionHandler)
             // update state
             state = .AuthorizationStateApproved
-        } else {
+            self.stopObserving()
+
+        } else if(self.parametersFromQueryString(url?.query)["response_type"] == nil){
 
             let error = NSError(domain:AGAuthzErrorDomain, code:0, userInfo:["NSLocalizedDescriptionKey": "User cancelled authorization."])
             completionHandler(nil, error)
+            self.stopObserving()
+
         }
         // finally, unregister
-        self.stopObserving()
     }
 
     func parametersFromQueryString(queryString: String?) -> [String: String] {
