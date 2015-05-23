@@ -96,6 +96,8 @@
     <source-file src="src/ios/oauth-0.2.0/FacebookOAuth2Module.swift" />
     <source-file src="src/ios/oauth-0.2.0/KeycloakOAuth2Module.swift" />
     <source-file src="src/ios/oauth-0.2.0/OAuth2Module.swift" />
+    <source-file src="src/ios/oauth-0.2.0/OAuth2WebView.swift" />
+
     <source-file src="src/ios/oauth-0.2.0/OAuth2Session.swift" />
     <source-file src="src/ios/oauth-0.2.0/OpenIDClaim.swift" />
     <source-file src="src/ios/oauth-0.2.0/TrustedPersistantOAuth2Session.swift" />

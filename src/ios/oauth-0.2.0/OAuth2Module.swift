@@ -41,7 +41,7 @@ enum AuthorizationState {
 /**
 Parent class of any OAuth2 module implementing generic OAuth2 authorization flow
 */
-public class OAuth2Module: AuthzModule {
+public class OAuth2Module: NSObject, AuthzModule {
     let config: Config
     var http: Http
 
@@ -110,16 +110,17 @@ public class OAuth2Module: AuthzModule {
 
         // calculate final url
         var params = "?scope=\(config.scope)&redirect_uri=\(config.redirectURL.urlEncode())&client_id=\(config.clientId)&response_type=code"
-        
+
         var url = NSURL(string: http.calculateURL(config.baseURL, url:config.authzEndpoint).absoluteString! + params)!
         
         dispatch_sync(dispatch_get_main_queue(), {
-            var webView = UIWebView(frame: CGRectMake(10, 10, 1200, 3000))
-            
+            var webView = OAuth2WebView(frame: CGRectMake(10, 10, 1200, 3000))
+            println("Opening \(url)")
             webView.loadRequest(NSURLRequest(URL: url))
-            
             UIApplication.sharedApplication().delegate?.window!?.addSubview(webView)
         })
+        
+        
     }
 
     /**
