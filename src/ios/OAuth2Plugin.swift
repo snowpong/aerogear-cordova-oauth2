@@ -72,12 +72,13 @@ import Foundation
     
     func requestAccess(command: CDVInvokedUrlCommand) {
         let accountId = command.arguments[0] as! String
+        let loginString = command.arguments[1] as? String
 
         let module = AccountManager.getAccountByName(accountId)
 
         commandDelegate.runInBackground { () -> Void  in
             if let module = module {
-                module.loginString = "Logg inn"
+                module.loginString = loginString
                 module.requestAccess({ (accessToken, error ) in
                     var commandResult:CDVPluginResult
                     if let error = error {

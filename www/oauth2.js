@@ -25,7 +25,7 @@ var OAuth2 = function () {};
 function enrich(that, object) {
     that[object.name] = {
     requestAccess: function () {
-      return oauth2.requestAccess(object.name);
+      return oauth2.requestAccess(object.name, object.titleText);
     },
     deleteAccount: function () {
       return oauth2.deleteAccount(object.name);
@@ -160,7 +160,7 @@ OAuth2.prototype.addFacebook = function (object) {
       });
   });
  */
-OAuth2.prototype.requestAccess = function (accountId) {
+OAuth2.prototype.requestAccess = function (accountId, titleText) {
   var success, error;
 
   return new Promise(function (resolve, reject) {
@@ -174,7 +174,7 @@ OAuth2.prototype.requestAccess = function (accountId) {
       resolve(result);
     };
 
-    cordova.exec(success, error, 'OAuth2Plugin', 'requestAccess', [accountId]);
+    cordova.exec(success, error, 'OAuth2Plugin', 'requestAccess', [accountId, titleText]);
   });
 }
 
