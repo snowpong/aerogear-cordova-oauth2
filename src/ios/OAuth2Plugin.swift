@@ -78,7 +78,7 @@ import Foundation
 
         commandDelegate.runInBackground { () -> Void  in
             if let module = module {
-                module.loginText = loginText
+                module.loginString = loginText
                 module.requestAccess({ (accessToken, error ) in
                     var commandResult:CDVPluginResult
                     if let error = error {
@@ -98,7 +98,7 @@ import Foundation
 
         commandDelegate.runInBackground { () -> Void  in
             if let module = module {
-                AccountManager.clearTokens(accountId)
+                module.clearTokens()
 
                 var commandResult:CDVPluginResult
                 
