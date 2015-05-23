@@ -24,8 +24,9 @@ var OAuth2 = function () {};
 
 function enrich(that, object) {
     that[object.name] = {
-    requestAccess: function () {
-      return oauth2.requestAccess(object.name, object.titleText);
+    requestAccess: function (accountId, titleText) {
+      console.log(object)
+      return oauth2.requestAccess(object.name, titleText);
     },
     deleteAccount: function () {
       return oauth2.deleteAccount(object.name);
@@ -173,7 +174,7 @@ OAuth2.prototype.requestAccess = function (accountId, titleText) {
     success = function (result) {
       resolve(result);
     };
-
+    console.log(titleText)
     cordova.exec(success, error, 'OAuth2Plugin', 'requestAccess', [accountId, titleText]);
   });
 }
