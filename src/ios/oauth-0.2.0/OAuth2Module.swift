@@ -110,7 +110,16 @@ public class OAuth2Module: AuthzModule {
 
         // calculate final url
         var params = "?scope=\(config.scope)&redirect_uri=\(config.redirectURL.urlEncode())&client_id=\(config.clientId)&response_type=code"
-        UIApplication.sharedApplication().openURL(NSURL(string: http.calculateURL(config.baseURL, url:config.authzEndpoint).absoluteString! + params)!)
+        
+        var url = NSURL(string: http.calculateURL(config.baseURL, url:config.authzEndpoint).absoluteString! + params)!
+        
+        dispatch_sync(dispatch_get_main_queue(), {
+            var webView = UIWebView(frame: CGRectMake(10, 10, 1200, 3000))
+            
+            webView.loadRequest(NSURLRequest(URL: url))
+            
+            UIApplication.sharedApplication().delegate?.window!?.addSubview(webView)
+        })
     }
 
     /**
