@@ -34,6 +34,9 @@ import android.widget.ProgressBar;
 import android.view.Window;
 import java.net.URL;
 import android.graphics.Color;
+import android.widget.Button;
+import android.graphics.drawable.Drawable;
+import android.widget.TextView;
 /**
  * This is a WebView Dialog which is opened to a OAuth2 sign in page and sends
  * data back to the calling activity.
@@ -49,6 +52,8 @@ public class OAuthWebViewDialog extends DialogFragment {
     private WebView webView;
     private ProgressBar progressBar;
     private String authorizeUrl;
+    private DialogFragment frag = this;
+
     final private OAuthViewClient client = new OAuthViewClient() {
 
         @Override
@@ -59,9 +64,17 @@ public class OAuthWebViewDialog extends DialogFragment {
         }
 
     };
-    private String redirectURL;
+    private String headerText;
 
+    private String redirectURL;
     private FakeR fakeR;
+
+    public void setHeaderText(String headerText){
+        this.headerText = headerText;
+    }
+
+
+
     private class OAuthViewClient extends WebViewClient {
 
         private OAuthReceiver receiver;
@@ -152,10 +165,12 @@ public class OAuthWebViewDialog extends DialogFragment {
         }
     }
 
-    public static OAuthWebViewDialog newInstance(URL authorizeURL, Uri redirectURL) {
+    public static OAuthWebViewDialog newInstance(URL authorizeURL, Uri redirectURL, String headerText) {
         OAuthWebViewDialog instance = new OAuthWebViewDialog();
         instance.authorizeUrl = authorizeURL.toString();
         instance.redirectURL = redirectURL.toString();
+
+        instance.setHeaderText(headerText);
 
         Bundle args = new Bundle();
         args.putString(AUTHORIZE_URL, instance.authorizeUrl);
@@ -201,6 +216,25 @@ public class OAuthWebViewDialog extends DialogFragment {
         webView.setScrollContainer(true);
         webView.setBackgroundColor(Color.parseColor("#FFFFFF"));
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+
+        Button btn = (Button)v.findViewById(fakeR.getId("button"));
+
+        TextView tv = (TextView)v.findViewById(fakeR.getId("logIn"));
+        tv.setText(this.headerText);
+
+        int id = getActivity().getApplicationContext().getResources().getIdentifier("ic_action_remove", "drawable", getActivity().getApplicationContext().getPackageName());
+        Drawable crossDrawable = getActivity().getApplicationContext().getResources().getDrawable(id);
+
+        crossDrawable.setColorFilter(new android.graphics.PorterDuffColorFilter(android.graphics.Color.WHITE, android.graphics.PorterDuff.Mode.SRC_IN));
+
+        btn.setBackground(crossDrawable);
+
+        btn.setOnClickListener(new View.OnClickListener() { 
+            @Override public void onClick(View view) { 
+                System.out.println("CLOSED STUFF");
+                frag.dismiss();
+            } 
+        });
 
         return v;
     }

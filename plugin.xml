@@ -16,6 +16,7 @@
   <dependency id="com.vladstirbu.cordova.promise" url="https://github.com/vstirbu/PromisesPlugin.git"/>
 
   <platform name="android">
+
     <dependency id="org.jboss.aerogear.cordova.android.reflect" url="https://github.com/edewit/aerogear-reflect-cordova.git"/>
     <config-file target="res/xml/config.xml" parent="/*">
       <feature name="OAuth2Plugin">
@@ -29,6 +30,13 @@
     <source-file src="src/android/OauthGoogleServicesIntentHelper.java" target-dir="src/org/jboss/aerogear/cordova/oauth2/"/>
     <resource-file src="src/android/res/layout/oauth_web_view.xml" target="res/layout/oauth_web_view.xml" />
     <resource-file src="src/android/res/values/styles.xml" target="res/values/styles.xml" />
+
+
+    <source-file src="src/android/res/drawable/drawable-hdpi/ic_action_cancel.png" target-dir="res/drawable/drawable-hdpi" />
+    <source-file src="src/android/res/drawable/drawable-mdpi/ic_action_cancel.png" target-dir="res/drawable/drawable-mdpi" />
+    <source-file src="src/android/res/drawable/drawable-xhdpi/ic_action_cancel.png" target-dir="res/drawable/drawable-xhdpi" />
+    <source-file src="src/android/res/drawable/drawable-xxhdpi/ic_action_cancel.png" target-dir="res/drawable/drawable-xxhdpi" />
+
     <source-file src="src/android/libs/src/org/jboss/aerogear/android/authorization/AuthorizationConfiguration.java" target-dir="src/org/jboss/aerogear/android/authorization/"/>
     <source-file src="src/android/libs/src/org/jboss/aerogear/android/authorization/AuthorizationManager.java" target-dir="src/org/jboss/aerogear/android/authorization/"/>
     <source-file src="src/android/libs/src/org/jboss/aerogear/android/authorization/AuthzModule.java" target-dir="src/org/jboss/aerogear/android/authorization/"/>

@@ -8,17 +8,53 @@
     android:gravity="center_vertical"
     android:background="@android:color/white">
 
-    <ProgressBar
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:layout_gravity="center"
-        android:id="@+id/progress_bar"/>
-
-    <WebView
-        android:id="@+id/web_oauth"
+    <RelativeLayout
+        android:id="@+id/rl"
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone" />
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
 
+        <WebView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/web_oauth"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/logIn" />
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="75px"
+            android:text="Logg inn"
+            android:id="@+id/logIn"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:textColor="#ffffff"
+            android:background="#d32210" />
+
+        <Button
+            android:layout_width="75px"
+            android:layout_height="75px"
+            android:id="@+id/button"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+           />
+        <ProgressBar
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_gravity="center"
+            android:layout_centerInParent="true"
+            android:id="@+id/progress_bar"/>
+
+    </RelativeLayout>
+ 
 
 </LinearLayout>

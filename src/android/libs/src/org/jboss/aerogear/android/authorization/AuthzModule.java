@@ -50,6 +50,8 @@ public interface AuthzModule extends PipeModule {
      */
     public boolean hasCredentials();
 
+    public void setHeaderText(String headerText);
+
     /**
      * 
      * Begin requesting access for the application. This method MUST be

@@ -37,12 +37,13 @@ public class OAuth2WebFragmentFetchAutorization {
 
     private final Activity activity;
     private final String state;
-  
+    private final String headerText;
     private FakeR fakeR;
 
-    public OAuth2WebFragmentFetchAutorization(Activity activity, String state) {
+    public OAuth2WebFragmentFetchAutorization(Activity activity, String state, String headerText) {
         this.activity = activity;
         this.state = state;
+        this.headerText = headerText;
         this.fakeR = new FakeR(activity);
     }
 
@@ -93,7 +94,7 @@ public class OAuth2WebFragmentFetchAutorization {
 
         URL authURL = new URL(authzEndpoint.toString() + query);
 
-        final OAuthWebViewDialog dialog = OAuthWebViewDialog.newInstance(authURL, redirectURL);
+        final OAuthWebViewDialog dialog = OAuthWebViewDialog.newInstance(authURL, redirectURL, headerText);
         dialog.setReceiver(new OAuthWebViewDialog.OAuthReceiver() {
             @Override
             public void receiveOAuthCode(String code) {

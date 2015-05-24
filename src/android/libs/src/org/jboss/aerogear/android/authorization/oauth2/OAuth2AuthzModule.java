@@ -51,6 +51,7 @@ public class OAuth2AuthzModule implements AuthzModule {
     private final String accountId;
     private final String clientId;
     private final OAuth2Properties config;
+    private String headerText;
     private OAuth2AuthzSession account;
     private OAuth2AuthzService service;
 
@@ -84,6 +85,10 @@ public class OAuth2AuthzModule implements AuthzModule {
         }
 
         return !isNullOrEmpty(account.getAccessToken());
+    }
+
+    public void setHeaderText(String headerText){
+        this.headerText = headerText;
     }
 
     @Override
@@ -126,7 +131,7 @@ public class OAuth2AuthzModule implements AuthzModule {
 
         if (!service.hasAccount(accountId)) {
 
-            OAuth2WebFragmentFetchAutorization authzFetch = new OAuth2WebFragmentFetchAutorization(activity, state);
+            OAuth2WebFragmentFetchAutorization authzFetch = new OAuth2WebFragmentFetchAutorization(activity, state, this.headerText);
             authzFetch.performAuthorization(config, new OAuth2AuthorizationCallback(activity, callback, instance));
 
         } else {

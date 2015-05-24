@@ -100,10 +100,11 @@ public class OAuth2Plugin extends BasePlugin {
     return add(data, callbackContext);
   }
 
-  public boolean requestAccess(String name, final CallbackContext callbackContext) {
+  public boolean requestAccess(String name, String headerText, final CallbackContext callbackContext) {
     Log.d(TAG, "requesting access");
 
     final AuthzModule module = AuthorizationManager.getModule(name);
+    module.setHeaderText(headerText);
     module.requestAccess(cordova.getActivity(), new Callback<String>() {
       @Override
       public void onSuccess(String o) {
