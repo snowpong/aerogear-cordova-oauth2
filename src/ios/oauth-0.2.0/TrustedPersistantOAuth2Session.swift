@@ -242,6 +242,10 @@ public class TrustedPersistantOAuth2Session: OAuth2Session {
     public var refreshToken: String? {
         get {
             if let str = self.keychain.read(self.accountId, tokenType: .RefreshToken){
+                if str as String == ""{
+                    return nil
+                }
+
                 return str as String
             }
             
@@ -250,6 +254,8 @@ public class TrustedPersistantOAuth2Session: OAuth2Session {
         set(value) {
             if let unwrappedValue = value {
                 self.keychain.save(self.accountId, tokenType: .RefreshToken, value: unwrappedValue)
+            }else{
+                self.keychain.save(self.accountId, tokenType: .RefreshToken, value: "")
             }
         }
     }
