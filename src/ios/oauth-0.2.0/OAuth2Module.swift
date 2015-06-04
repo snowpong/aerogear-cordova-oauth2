@@ -108,9 +108,11 @@ public class OAuth2Module: NSObject, AuthzModule, UIWebViewDelegate {
         
         // update state to 'Pending'
         self.state = .AuthorizationStatePendingExternalApproval
-
+        
+        var state = NSUUID().UUIDString
+        
         // calculate final url
-        var params = "?scope=\(config.scope)&redirect_uri=\(config.redirectURL.urlEncode())&client_id=\(config.clientId)&response_type=code"
+        var params = "?scope=\(config.scope)&redirect_uri=\(config.redirectURL.urlEncode())&client_id=\(config.clientId)&response_type=code&state=\(state)"
 
         var url = NSURL(string: http.calculateURL(config.baseURL, url:config.authzEndpoint).absoluteString! + params)!
         
@@ -243,7 +245,11 @@ public class OAuth2Module: NSObject, AuthzModule, UIWebViewDelegate {
                 let exp: String = expiration.stringValue
                 
                 self.oauth2Session.saveAccessToken(accessToken, refreshToken: refreshToken, accessTokenExpiration: exp, refreshTokenExpiration: nil)
+                
                 completionHandler(accessToken, nil)
+                
+                self.closeWebView()
+
             }
         })
     }
@@ -262,6 +268,7 @@ public class OAuth2Module: NSObject, AuthzModule, UIWebViewDelegate {
             self.refreshAccessToken(completionHandler)
         } else {
             // ask for authorization code and once obtained exchange code for access token
+
             self.requestAuthorizationCode(completionHandler)
         }
     }
@@ -335,6 +342,7 @@ public class OAuth2Module: NSObject, AuthzModule, UIWebViewDelegate {
     */
     public func clearTokens() {
         // return if not yet initialized
+        println("IN CLEARTOKENS")
         if (self.oauth2Session.accessToken == nil) {
             return;
         }
@@ -384,7 +392,7 @@ public class OAuth2Module: NSObject, AuthzModule, UIWebViewDelegate {
 
     func extractCode(urlString: String?, completionHandler: (AnyObject?, NSError?) -> Void) {
         let url: NSURL? = NSURL(string: urlString!)
-
+        println(url)
         // extract the code from the URL
         let code = self.parametersFromQueryString(url?.query)["code"]
         // if exists perform the exchange
@@ -394,7 +402,7 @@ public class OAuth2Module: NSObject, AuthzModule, UIWebViewDelegate {
             state = .AuthorizationStateApproved
             self.stopObserving()
 
-        } else if(self.parametersFromQueryString(url?.query)["response_type"] == nil){
+        } else if(self.parametersFromQueryString(url?.query)["response_type"] == nil && self.parametersFromQueryString(url?.query?.stringByRemovingPercentEncoding)["response_type"] == nil){
 
             let error = NSError(domain:AGAuthzErrorDomain, code:0, userInfo:["NSLocalizedDescriptionKey": "User cancelled authorization."])
             completionHandler(nil, error)

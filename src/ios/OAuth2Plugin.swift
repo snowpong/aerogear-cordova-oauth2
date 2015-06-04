@@ -80,6 +80,7 @@ import Foundation
             if let module = module {
                 module.loginString = loginString
                 module.requestAccess({ (accessToken, error ) in
+                    println("GOT CALLBACK")
                     var commandResult:CDVPluginResult
                     if let error = error {
                         commandResult = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAsString: error.description)

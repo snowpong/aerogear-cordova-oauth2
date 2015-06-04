@@ -218,14 +218,20 @@ public class TrustedPersistantOAuth2Session: OAuth2Session {
     public var accessToken: String? {
         get {
             if let str = self.keychain.read(self.accountId, tokenType:  .AccessToken){
+                if str as String == ""{
+                    return nil
+                }
                 return str as String
             }
                 
             return nil
         }
         set(value) {
+            println("Setting access Token to \(value)")
             if let unwrappedValue = value {
                 let result = self.keychain.save(self.accountId, tokenType: .AccessToken, value: unwrappedValue)
+            }else{
+                let result = self.keychain.save(self.accountId, tokenType: .AccessToken, value: "")
             }
         }
     }
@@ -303,6 +309,7 @@ public class TrustedPersistantOAuth2Session: OAuth2Session {
     Clear all tokens. Method used when doing logout or revoke.
     */
     public func clearTokens() {
+        println("CLEARING TOKENS TRUSTED")
         self.accessToken = nil
         self.refreshToken = nil
         self.accessTokenExpirationDate = nil
