@@ -227,11 +227,15 @@ public class TrustedPersistantOAuth2Session: OAuth2Session {
             return nil
         }
         set(value) {
-            println("Setting access Token to \(value)")
+            
             if let unwrappedValue = value {
-                let result = self.keychain.save(self.accountId, tokenType: .AccessToken, value: unwrappedValue)
-            }else{
-                let result = self.keychain.save(self.accountId, tokenType: .AccessToken, value: "")
+                if unwrappedValue == "DELETE" {
+                    println("Deleting access Token \(value)")
+
+                    let result = self.keychain.save(self.accountId, tokenType: .AccessToken, value: "")
+                }else{
+                    let result = self.keychain.save(self.accountId, tokenType: .AccessToken, value: unwrappedValue)
+                }
             }
         }
     }
@@ -252,10 +256,15 @@ public class TrustedPersistantOAuth2Session: OAuth2Session {
             return nil
         }
         set(value) {
+
             if let unwrappedValue = value {
-                self.keychain.save(self.accountId, tokenType: .RefreshToken, value: unwrappedValue)
-            }else{
-                self.keychain.save(self.accountId, tokenType: .RefreshToken, value: "")
+                if unwrappedValue == "DELETE" {
+                    println("Deleting REFRESH Token \(value)")
+
+                    self.keychain.save(self.accountId, tokenType: .RefreshToken, value: "")
+                }else{
+                    self.keychain.save(self.accountId, tokenType: .RefreshToken, value: unwrappedValue)
+                }
             }
         }
     }
@@ -316,8 +325,8 @@ public class TrustedPersistantOAuth2Session: OAuth2Session {
     */
     public func clearTokens() {
         println("CLEARING TOKENS TRUSTED")
-        self.accessToken = nil
-        self.refreshToken = nil
+        self.accessToken = "DELETE"
+        self.refreshToken = "DELETE"
         self.accessTokenExpirationDate = nil
         self.refreshTokenExpirationDate = nil
     }

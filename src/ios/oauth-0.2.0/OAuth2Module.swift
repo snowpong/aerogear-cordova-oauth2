@@ -131,7 +131,7 @@ public class OAuth2Module: NSObject, AuthzModule, UIWebViewDelegate {
             self.toolbar = toolbar
 
             
-            var closeItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Stop, target: self, action: Selector("closeWebView"))
+            var closeItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Stop, target: self, action: Selector("closeWebViewWithErrorThrown"))
             
             var spacer = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.FlexibleSpace, target: nil, action: nil)
             
@@ -169,9 +169,15 @@ public class OAuth2Module: NSObject, AuthzModule, UIWebViewDelegate {
         
     }
 
-    
+    func closeWebViewWithErrorThrown(){
+        
+            self.completionHandler!(nil, NSError(domain: "OAuth2Module", code: 0, userInfo: ["WebView Closed" : "WebView was closed by the user"]))
+        
+        closeWebView()
+    }
     func closeWebView(){
         println("Closed view")
+        
         if let wv = self.webView{
             wv.removeFromSuperview()
         }
@@ -179,6 +185,9 @@ public class OAuth2Module: NSObject, AuthzModule, UIWebViewDelegate {
         if let tb = self.toolbar{
             tb.removeFromSuperview()
         }
+        
+        
+        
     }
     
     public func webView(webView: UIWebView, shouldStartLoadWithRequest request: NSURLRequest, navigationType: UIWebViewNavigationType) -> Bool {
