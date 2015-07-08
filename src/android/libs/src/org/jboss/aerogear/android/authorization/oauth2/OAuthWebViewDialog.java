@@ -227,7 +227,13 @@ public class OAuthWebViewDialog extends DialogFragment {
 
         crossDrawable.setColorFilter(new android.graphics.PorterDuffColorFilter(android.graphics.Color.WHITE, android.graphics.PorterDuff.Mode.SRC_IN));
 
-        btn.setBackground(crossDrawable);
+
+        if(Build.VERSION.SDK_INT <= Build.VERSION_CODES.JELLY_BEAN){
+            btn.setBackgroundDrawable(crossDrawable);
+        }else{
+            btn.setBackground(crossDrawable);
+        }
+        
 
         btn.setOnClickListener(new View.OnClickListener() { 
             @Override public void onClick(View view) { 
