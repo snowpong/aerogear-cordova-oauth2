@@ -218,14 +218,24 @@ public class TrustedPersistantOAuth2Session: OAuth2Session {
     public var accessToken: String? {
         get {
             if let str = self.keychain.read(self.accountId, tokenType:  .AccessToken){
+                if str as String == ""{
+                    return nil
+                }
                 return str as String
             }
                 
             return nil
         }
         set(value) {
+            
             if let unwrappedValue = value {
-                let result = self.keychain.save(self.accountId, tokenType: .AccessToken, value: unwrappedValue)
+                if unwrappedValue == "DELETE" {
+                    println("Deleting access Token \(value)")
+
+                    let result = self.keychain.save(self.accountId, tokenType: .AccessToken, value: "")
+                }else{
+                    let result = self.keychain.save(self.accountId, tokenType: .AccessToken, value: unwrappedValue)
+                }
             }
         }
     }
@@ -236,14 +246,25 @@ public class TrustedPersistantOAuth2Session: OAuth2Session {
     public var refreshToken: String? {
         get {
             if let str = self.keychain.read(self.accountId, tokenType: .RefreshToken){
+                if str as String == ""{
+                    return nil
+                }
+
                 return str as String
             }
             
             return nil
         }
         set(value) {
+
             if let unwrappedValue = value {
-                self.keychain.save(self.accountId, tokenType: .RefreshToken, value: unwrappedValue)
+                if unwrappedValue == "DELETE" {
+                    println("Deleting REFRESH Token \(value)")
+
+                    self.keychain.save(self.accountId, tokenType: .RefreshToken, value: "")
+                }else{
+                    self.keychain.save(self.accountId, tokenType: .RefreshToken, value: unwrappedValue)
+                }
             }
         }
     }
@@ -303,8 +324,9 @@ public class TrustedPersistantOAuth2Session: OAuth2Session {
     Clear all tokens. Method used when doing logout or revoke.
     */
     public func clearTokens() {
-        self.accessToken = nil
-        self.refreshToken = nil
+        println("CLEARING TOKENS TRUSTED")
+        self.accessToken = "DELETE"
+        self.refreshToken = "DELETE"
         self.accessTokenExpirationDate = nil
         self.refreshTokenExpirationDate = nil
     }
