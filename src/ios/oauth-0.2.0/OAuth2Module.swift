@@ -55,6 +55,10 @@ public class OAuth2Module: NSObject, AuthzModule, UIWebViewDelegate {
     
     var loginString: String?
     
+    var request: NSURLRequest?
+    
+    var retries: Int?
+    
     /**
     Initialize an OAuth2 module
 
@@ -121,7 +125,6 @@ public class OAuth2Module: NSObject, AuthzModule, UIWebViewDelegate {
             var window = UIApplication.sharedApplication().delegate?.window!
             var webView = UIWebView(frame: CGRectMake(5, 64, window!.frame.width - 10, window!.frame.height - 69))
 
-            webView.loadRequest(NSURLRequest(URL: url))
             webView.delegate = self
             
             var toolbar = UIToolbar(frame: CGRectMake(5, 20, window!.frame.width - 10, 44))
@@ -163,9 +166,32 @@ public class OAuth2Module: NSObject, AuthzModule, UIWebViewDelegate {
             window?.addSubview(toolbar)
             window?.addSubview(webView)
 
+            self.request = NSMutableURLRequest(URL: url, cachePolicy: NSURLRequestCachePolicy.ReloadRevalidatingCacheData, timeoutInterval: 10.0)
             
+            self.retries = 0
+            webView.loadRequest(self.request!)
+
         })
         
+        
+    }
+    
+    public func webView(webView: UIWebView, didFailLoadWithError error: NSError) {
+        if error.description.rangeOfString("Could not connect to the server") != nil &&  error.description.rangeOfString("NSErrorFailingURLStringKey=http://localhost:8100/") != nil {
+            return
+        }
+        
+        if let retr = self.retries{
+            if retr > 3{
+                self.completionHandler!(nil, NSError(domain: "OAuth2Module", code: 0, userInfo: ["ConnectionError" : "Couldn't connect to DNT"]))
+                
+                closeWebView()
+
+            }else{
+                self.retries?++
+                self.webView?.loadRequest(self.request!)
+            }
+        }
         
     }
 
@@ -176,7 +202,6 @@ public class OAuth2Module: NSObject, AuthzModule, UIWebViewDelegate {
         closeWebView()
     }
     func closeWebView(){
-        println("Closed view")
         
         if let wv = self.webView{
             wv.removeFromSuperview()
@@ -246,7 +271,7 @@ public class OAuth2Module: NSObject, AuthzModule, UIWebViewDelegate {
                 completionHandler(nil, error)
                 return
             }
-
+            
             if let unwrappedResponse = responseObject as? [String: AnyObject] {
                 let accessToken: String = unwrappedResponse["access_token"] as! String
                 let refreshToken: String = unwrappedResponse["refresh_token"] as! String
@@ -259,6 +284,7 @@ public class OAuth2Module: NSObject, AuthzModule, UIWebViewDelegate {
                 
                 self.closeWebView()
 
+            }else if let ur = responseObject as? NSHTTPURLResponse{
             }
         })
     }
@@ -351,7 +377,6 @@ public class OAuth2Module: NSObject, AuthzModule, UIWebViewDelegate {
     */
     public func clearTokens() {
         // return if not yet initialized
-        println("IN CLEARTOKENS")
         if (self.oauth2Session.accessToken == nil) {
             return;
         }
@@ -401,7 +426,6 @@ public class OAuth2Module: NSObject, AuthzModule, UIWebViewDelegate {
 
     func extractCode(urlString: String?, completionHandler: (AnyObject?, NSError?) -> Void) {
         let url: NSURL? = NSURL(string: urlString!)
-        println(url)
         // extract the code from the URL
         let code = self.parametersFromQueryString(url?.query)["code"]
         // if exists perform the exchange

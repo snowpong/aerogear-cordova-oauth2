@@ -85,7 +85,14 @@ public class KeychainWrap {
         keychainQuery[kSecClass as String] = kSecClassGenericPassword
         keychainQuery[kSecAttrService as String] = self.serviceIdentifier
         keychainQuery[kSecAttrAccount as String] = key + "_" + tokenType.rawValue
-        keychainQuery[kSecAttrAccessible as String] = kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly
+        
+        switch UIDevice.currentDevice().systemVersion.compare("8.0.0", options: NSStringCompareOptions.NumericSearch) {
+        case .OrderedSame, .OrderedDescending:
+            keychainQuery[kSecAttrAccessible as String] = kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly
+        case .OrderedAscending:
+            println("iOS < 8.0")
+        }
+
         
         // Search for the keychain items
         let statusSearch: OSStatus = SecItemCopyMatching(keychainQuery, nil)
@@ -133,8 +140,14 @@ public class KeychainWrap {
         keychainQuery[kSecAttrService as String] = self.serviceIdentifier
         keychainQuery[kSecAttrAccount as String] = userAccount + "_" + tokenType.rawValue
         keychainQuery[kSecReturnData as String] = true
-        keychainQuery[kSecAttrAccessible as String] = kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly
         
+        switch UIDevice.currentDevice().systemVersion.compare("8.0.0", options: NSStringCompareOptions.NumericSearch) {
+        case .OrderedSame, .OrderedDescending:
+            keychainQuery[kSecAttrAccessible as String] = kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly
+        case .OrderedAscending:
+            println("iOS < 8.0")
+        }
+
         var dataTypeRef: Unmanaged<AnyObject>?
         // Search for the keychain items
         let status: OSStatus = SecItemCopyMatching(keychainQuery, &dataTypeRef)
