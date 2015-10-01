@@ -72,13 +72,13 @@ public class KeychainWrap {
     :param: value       string value of the token
     */
     public func save(key: String, tokenType: TokenType, value: String) -> Bool {
-        var dataFromString: NSData? = value.dataUsingEncoding(NSUTF8StringEncoding)
+        let dataFromString: NSData? = value.dataUsingEncoding(NSUTF8StringEncoding)
         if (dataFromString == nil) {
             return false
         }
         
         // Instantiate a new default keychain query
-        var keychainQuery = NSMutableDictionary()
+        let keychainQuery = NSMutableDictionary()
         if let groupId = self.groupId {
             keychainQuery[kSecAttrAccessGroup as String] = groupId
         }
@@ -86,11 +86,10 @@ public class KeychainWrap {
         keychainQuery[kSecAttrService as String] = self.serviceIdentifier
         keychainQuery[kSecAttrAccount as String] = key + "_" + tokenType.rawValue
         
-        switch UIDevice.currentDevice().systemVersion.compare("8.0.0", options: NSStringCompareOptions.NumericSearch) {
-        case .OrderedSame, .OrderedDescending:
-            keychainQuery[kSecAttrAccessible as String] = kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly
-        case .OrderedAscending:
-            println("iOS < 8.0")
+        if #available(iOS 8.0, *) {
+                keychainQuery[kSecAttrAccessible as String] = kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly
+        } else { //ios7
+                keychainQuery[kSecAttrAccessible as String] = kSecAttrAccessibleWhenUnlockedThisDeviceOnly
         }
 
         
@@ -103,9 +102,9 @@ public class KeychainWrap {
                 let attributesToUpdate = NSMutableDictionary()
                 attributesToUpdate[kSecValueData as String] = dataFromString!
             
-                var statusUpdate: OSStatus = SecItemUpdate(keychainQuery, attributesToUpdate)
+                let statusUpdate: OSStatus = SecItemUpdate(keychainQuery, attributesToUpdate)
                 if (statusUpdate != errSecSuccess) {
-                    println("tokens not updated")
+                    print("tokens not updated")
                     return false
                 }
             } else { // revoked token or newly installed app, clear KC
@@ -113,9 +112,9 @@ public class KeychainWrap {
             }
         } else if(statusSearch == errSecItemNotFound) { // if new, add
             keychainQuery[kSecValueData as String] = dataFromString!
-            var statusAdd: OSStatus = SecItemAdd(keychainQuery, nil)
+            let statusAdd: OSStatus = SecItemAdd(keychainQuery, nil)
             if(statusAdd != errSecSuccess) {
-                 println("tokens not saved")
+                print("tokens not saved")
                 return false
             }
         } else { // error case
@@ -141,21 +140,20 @@ public class KeychainWrap {
         keychainQuery[kSecAttrAccount as String] = userAccount + "_" + tokenType.rawValue
         keychainQuery[kSecReturnData as String] = true
         
-        switch UIDevice.currentDevice().systemVersion.compare("8.0.0", options: NSStringCompareOptions.NumericSearch) {
-        case .OrderedSame, .OrderedDescending:
+        if #available(iOS 8.0, *) {
             keychainQuery[kSecAttrAccessible as String] = kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly
-        case .OrderedAscending:
-            println("iOS < 8.0")
+        } else {
+            keychainQuery[kSecAttrAccessible as String] = kSecAttrAccessibleWhenUnlockedThisDeviceOnly
         }
 
         var dataTypeRef: Unmanaged<AnyObject>?
         // Search for the keychain items
         let status: OSStatus = SecItemCopyMatching(keychainQuery, &dataTypeRef)
         if (status == errSecItemNotFound) {
-            println("\(tokenType.rawValue) not found")
+            print("\(tokenType.rawValue) not found")
             return nil
         } else if (status != errSecSuccess) {
-            println("Error attempting to retrieve \(tokenType.rawValue) with error code \(status) ")
+            print("Error attempting to retrieve \(tokenType.rawValue) with error code \(status) ")
             return nil
         }
         
@@ -167,7 +165,7 @@ public class KeychainWrap {
             // Convert the data retrieved from the keychain into a string
             contentsOfKeychain = NSString(data: retrievedData, encoding: NSUTF8StringEncoding)
         } else {
-            println("Nothing was retrieved from the keychain. Status code \(status)")
+            print("Nothing was retrieved from the keychain. Status code \(status)")
         }
         
         return contentsOfKeychain
@@ -185,7 +183,7 @@ public class KeychainWrap {
     }
     
     func deleteAllKeysForSecClass(secClass: CFTypeRef) -> Bool {
-        var keychainQuery = NSMutableDictionary()
+        let keychainQuery = NSMutableDictionary()
         keychainQuery[kSecClass as String] = secClass
         let result:OSStatus = SecItemDelete(keychainQuery)
         if (result == errSecSuccess) {
@@ -220,7 +218,7 @@ public class TrustedPersistantOAuth2Session: OAuth2Session {
         }
         set(value) {
             if let unwrappedValue = value {
-                let result = self.keychain.save(self.accountId, tokenType: .ExpirationDate, value: unwrappedValue.toString())
+                _ = self.keychain.save(self.accountId, tokenType: .ExpirationDate, value: unwrappedValue.toString())
             }
         }
     }
@@ -245,9 +243,9 @@ public class TrustedPersistantOAuth2Session: OAuth2Session {
                 if unwrappedValue == "DELETE" {
                     println("Deleting access Token \(value)")
 
-                    let result = self.keychain.save(self.accountId, tokenType: .AccessToken, value: "")
+                    _ = self.keychain.save(self.accountId, tokenType: .AccessToken, value: "")
                 }else{
-                    let result = self.keychain.save(self.accountId, tokenType: .AccessToken, value: unwrappedValue)
+                    _ = self.keychain.save(self.accountId, tokenType: .AccessToken, value: unwrappedValue)
                 }
             }
         }
@@ -296,7 +294,7 @@ public class TrustedPersistantOAuth2Session: OAuth2Session {
         }
         set(value) {
             if let unwrappedValue = value {
-                let result = self.keychain.save(self.accountId, tokenType: .RefreshExpirationDate, value: unwrappedValue.toString())
+                _ = self.keychain.save(self.accountId, tokenType: .RefreshExpirationDate, value: unwrappedValue.toString())
             }
         }
     }

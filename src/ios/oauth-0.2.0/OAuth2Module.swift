@@ -113,12 +113,12 @@ public class OAuth2Module: NSObject, AuthzModule, UIWebViewDelegate {
         // update state to 'Pending'
         self.state = .AuthorizationStatePendingExternalApproval
         
-        var state = NSUUID().UUIDString
+        let state = NSUUID().UUIDString
         
         // calculate final url
-        var params = "?scope=\(config.scope)&redirect_uri=\(config.redirectURL.urlEncode())&client_id=\(config.clientId)&response_type=code&state=\(state)"
+        let params = "?scope=\(config.scope)&redirect_uri=\(config.redirectURL.urlEncode())&client_id=\(config.clientId)&response_type=code&state=\(state)"
 
-        var url = NSURL(string: http.calculateURL(config.baseURL, url:config.authzEndpoint).absoluteString! + params)!
+        let url = NSURL(string: http.calculateURL(config.baseURL, url:config.authzEndpoint).absoluteString + params)
         
         dispatch_sync(dispatch_get_main_queue(), {
             
@@ -134,11 +134,11 @@ public class OAuth2Module: NSObject, AuthzModule, UIWebViewDelegate {
             self.toolbar = toolbar
 
             
-            var closeItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Stop, target: self, action: Selector("closeWebViewWithErrorThrown"))
+            let closeItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Stop, target: self, action: Selector("closeWebViewWithErrorThrown"))
             
-            var spacer = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.FlexibleSpace, target: nil, action: nil)
+            let spacer = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.FlexibleSpace, target: nil, action: nil)
             
-            var rightSpacer = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.FixedSpace, target: nil, action: nil)
+            let rightSpacer = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.FixedSpace, target: nil, action: nil)
             
             rightSpacer.width = 7;
             
@@ -274,9 +274,9 @@ public class OAuth2Module: NSObject, AuthzModule, UIWebViewDelegate {
             
             if let unwrappedResponse = responseObject as? [String: AnyObject] {
                 let accessToken: String = unwrappedResponse["access_token"] as! String
-                let refreshToken: String = unwrappedResponse["refresh_token"] as! String
-                let expiration = unwrappedResponse["expires_in"] as! NSNumber
-                let exp: String = expiration.stringValue
+                let refreshToken: String? = unwrappedResponse["refresh_token"] as? String
+                let expiration = unwrappedResponse["expires_in"] as? NSNumber
+                let exp: String? = expiration?.stringValue
                 
                 self.oauth2Session.saveAccessToken(accessToken, refreshToken: refreshToken, accessTokenExpiration: exp, refreshTokenExpiration: nil)
                 
@@ -448,7 +448,7 @@ public class OAuth2Module: NSObject, AuthzModule, UIWebViewDelegate {
     func parametersFromQueryString(queryString: String?) -> [String: String] {
         var parameters = [String: String]()
         if (queryString != nil) {
-            var parameterScanner: NSScanner = NSScanner(string: queryString!)
+            let parameterScanner: NSScanner = NSScanner(string: queryString!)
             var name:NSString? = nil
             var value:NSString? = nil
 

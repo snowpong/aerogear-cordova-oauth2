@@ -116,7 +116,7 @@ public class AccountManager {
     */
     public class func addAccount(config: Config, moduleClass: OAuth2Module.Type) -> OAuth2Module {
         var myModule:OAuth2Module
-        myModule = moduleClass(config: config)
+        myModule = moduleClass.init(config: config)
         // TODO check accountId is unique in modules list
         sharedInstance.modules[myModule.oauth2Session.accountId] = myModule
         return myModule

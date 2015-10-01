@@ -96,8 +96,10 @@ public class Config {
     and can be any String. If AccountManager is not used, this field is optional.
     */
     public var accountId: String?
+
+    public var isWebView: Bool = false;
     
-    public init(base: String, authzEndpoint: String, redirectURL: String, accessTokenEndpoint: String, clientId: String, refreshTokenEndpoint: String? = nil, revokeTokenEndpoint: String? = nil, isOpenIDConnect:Bool? = nil, userInfoEndpoint: String? = nil, scopes: [String] = [],  clientSecret: String? = nil, accountId: String? = nil) {
+    public init(base: String, authzEndpoint: String, redirectURL: String, accessTokenEndpoint: String, clientId: String, refreshTokenEndpoint: String? = nil, revokeTokenEndpoint: String? = nil, isOpenIDConnect:Bool = false, userInfoEndpoint: String? = nil, scopes: [String] = [],  clientSecret: String? = nil, accountId: String? = nil, isWebView: Bool = false) {
         self.baseURL = base
         self.authzEndpoint = authzEndpoint
         self.redirectURL = redirectURL
@@ -110,5 +112,6 @@ public class Config {
         self.clientId = clientId
         self.clientSecret = clientSecret
         self.accountId = accountId
+        self.isWebView = isWebView
     }
 }

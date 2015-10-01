@@ -17,7 +17,7 @@
 
 import Foundation
 
-public class OpenIDClaim: Printable {
+public class OpenIDClaim: CustomStringConvertible {
     public var sub: String?
     public var name: String?
     public var givenName: String?
