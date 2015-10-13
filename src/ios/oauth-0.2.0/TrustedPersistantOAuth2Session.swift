@@ -241,7 +241,7 @@ public class TrustedPersistantOAuth2Session: OAuth2Session {
             
             if let unwrappedValue = value {
                 if unwrappedValue == "DELETE" {
-                    println("Deleting access Token \(value)")
+                    print("Deleting access Token \(value)")
 
                     _ = self.keychain.save(self.accountId, tokenType: .AccessToken, value: "")
                 }else{
@@ -270,7 +270,7 @@ public class TrustedPersistantOAuth2Session: OAuth2Session {
 
             if let unwrappedValue = value {
                 if unwrappedValue == "DELETE" {
-                    println("Deleting REFRESH Token \(value)")
+                    print("Deleting REFRESH Token \(value)")
 
                     self.keychain.save(self.accountId, tokenType: .RefreshToken, value: "")
                 }else{
@@ -335,7 +335,7 @@ public class TrustedPersistantOAuth2Session: OAuth2Session {
     Clear all tokens. Method used when doing logout or revoke.
     */
     public func clearTokens() {
-        println("CLEARING TOKENS TRUSTED")
+        print("CLEARING TOKENS TRUSTED")
         self.accessToken = "DELETE"
         self.refreshToken = "DELETE"
         self.accessTokenExpirationDate = nil

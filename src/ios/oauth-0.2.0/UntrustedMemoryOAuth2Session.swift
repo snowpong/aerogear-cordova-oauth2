@@ -85,7 +85,7 @@ public class UntrustedMemoryOAuth2Session: OAuth2Session {
     Clear all tokens. Method used when doing logout or revoke.
     */
     public func clearTokens() {
-        println("CLEARING TOKENS UNTRUSTED")
+        print("CLEARING TOKENS UNTRUSTED")
         self.accessToken = nil
         self.refreshToken = nil
         self.accessTokenExpirationDate = nil
