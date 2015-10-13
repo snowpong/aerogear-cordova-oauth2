@@ -106,7 +106,7 @@ public class FacebookOAuth2Module: OAuth2Module {
                     }
                     if let unwrappedResponse = responseObject as? String {
                         let data = unwrappedResponse.dataUsingEncoding(NSUTF8StringEncoding)
-                        let json: AnyObject? = try! NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions(rawValue: 0)
+                        let json: AnyObject? = try! NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions(rawValue: 0))
                         var openIDClaims: FacebookOpenIDClaim?
                         if let unwrappedResponse = json as? [String: AnyObject] {
                             openIDClaims = FacebookOpenIDClaim(fromDict: unwrappedResponse)

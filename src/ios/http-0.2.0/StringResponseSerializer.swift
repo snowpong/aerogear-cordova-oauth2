@@ -26,22 +26,21 @@ public class StringResponseSerializer : ResponseSerializer {
         return NSString(data: data, encoding:NSUTF8StringEncoding)
     }
     
-    public func validateResponse(response: NSURLResponse!, data: NSData, error: NSErrorPointer) -> Bool {
+    public func validateResponse(response: NSURLResponse!, data: NSData) throws {
+        var error: NSError! = NSError(domain: "Migrator", code: 0, userInfo: nil)
         let httpResponse = response as! NSHTTPURLResponse
         
         if !(httpResponse.statusCode >= 200 && httpResponse.statusCode < 300) {
-            var userInfo = [
+            let userInfo = [
                 NSLocalizedDescriptionKey: NSHTTPURLResponse.localizedStringForStatusCode(httpResponse.statusCode),
                 NetworkingOperationFailingURLResponseErrorKey: response]
 
-            if (error != nil) {
-                error.memory = NSError(domain: HttpResponseSerializationErrorDomain, code: httpResponse.statusCode, userInfo: userInfo)
+            if (true) {
+                error = NSError(domain: HttpResponseSerializationErrorDomain, code: httpResponse.statusCode, userInfo: userInfo)
             }
             
-            return false
-        }
-        
-        return true
+            throw error
+        }        
     }
     
     public init() {
