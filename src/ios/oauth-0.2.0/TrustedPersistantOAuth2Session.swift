@@ -209,7 +209,7 @@ public class TrustedPersistantOAuth2Session: OAuth2Session {
     */
     public var accessTokenExpirationDate: NSDate? {
         get {
-            var dateAsString = self.keychain.read(self.accountId, tokenType: .ExpirationDate)
+            let dateAsString = self.keychain.read(self.accountId, tokenType: .ExpirationDate)
             if let unwrappedDate = dateAsString {
                 return NSDate(dateString: unwrappedDate as String)
             } else {

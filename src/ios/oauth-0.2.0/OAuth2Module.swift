@@ -386,7 +386,7 @@ public class OAuth2Module: NSObject, AuthzModule, UIWebViewDelegate {
     }
     
     func clearCookies(){
-        var storage : NSHTTPCookieStorage = NSHTTPCookieStorage.sharedHTTPCookieStorage()
+        let storage : NSHTTPCookieStorage = NSHTTPCookieStorage.sharedHTTPCookieStorage()
 
         for cookie in storage.cookies! {
             storage.deleteCookie(cookie)
