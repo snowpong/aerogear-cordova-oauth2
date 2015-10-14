@@ -122,12 +122,12 @@ public class OAuth2Module: NSObject, AuthzModule, UIWebViewDelegate {
         
         dispatch_sync(dispatch_get_main_queue(), {
             
-            var window = UIApplication.sharedApplication().delegate?.window!
-            var webView = UIWebView(frame: CGRectMake(5, 64, window!.frame.width - 10, window!.frame.height - 69))
+            let window = UIApplication.sharedApplication().delegate?.window!
+            let webView = UIWebView(frame: CGRectMake(5, 64, window!.frame.width - 10, window!.frame.height - 69))
 
             webView.delegate = self
             
-            var toolbar = UIToolbar(frame: CGRectMake(5, 20, window!.frame.width - 10, 44))
+            let toolbar = UIToolbar(frame: CGRectMake(5, 20, window!.frame.width - 10, 44))
             var items = [UIBarButtonItem]()
 
             self.webView = webView
@@ -143,7 +143,7 @@ public class OAuth2Module: NSObject, AuthzModule, UIWebViewDelegate {
             rightSpacer.width = 7;
             
             
-            var label = UILabel(frame: CGRectMake(0, 0, 120, 44))
+            let label = UILabel(frame: CGRectMake(0, 0, 120, 44))
             if let txt = self.loginString{
                 label.text = txt
 
@@ -166,7 +166,7 @@ public class OAuth2Module: NSObject, AuthzModule, UIWebViewDelegate {
             window?.addSubview(toolbar)
             window?.addSubview(webView)
 
-            self.request = NSMutableURLRequest(URL: url, cachePolicy: NSURLRequestCachePolicy.ReloadRevalidatingCacheData, timeoutInterval: 10.0)
+            self.request = NSMutableURLRequest(URL: url!, cachePolicy: NSURLRequestCachePolicy.ReloadRevalidatingCacheData, timeoutInterval: 10.0)
             
             self.retries = 0
             webView.loadRequest(self.request!)
@@ -176,8 +176,8 @@ public class OAuth2Module: NSObject, AuthzModule, UIWebViewDelegate {
         
     }
     
-    public func webView(webView: UIWebView, didFailLoadWithError error: NSError) {
-        if error.description.rangeOfString("Could not connect to the server") != nil &&  error.description.rangeOfString("NSErrorFailingURLStringKey=http://localhost:8100/") != nil {
+    public func webView(webView: UIWebView, didFailLoadWithError error: NSError?) {
+        if error!.description.rangeOfString("Could not connect to the server") != nil &&  error!.description.rangeOfString("NSErrorFailingURLStringKey=http://localhost:8100/") != nil {
             return
         }
         
@@ -388,13 +388,13 @@ public class OAuth2Module: NSObject, AuthzModule, UIWebViewDelegate {
     func clearCookies(){
         var storage : NSHTTPCookieStorage = NSHTTPCookieStorage.sharedHTTPCookieStorage()
 
-        for cookie in storage.cookies  as! [NSHTTPCookie]{
+        for cookie in storage.cookies! {
             storage.deleteCookie(cookie)
         }
 
         NSUserDefaults.standardUserDefaults().synchronize()
         
-        for cookie in storage.cookies  as! [NSHTTPCookie]{
+        for cookie in storage.cookies! {
             storage.deleteCookie(cookie)
         }
 

@@ -76,7 +76,7 @@ import Foundation
 
         let module = AccountManager.getAccountByName(accountId)
 
-        commandDelegate.runInBackground { () -> Void  in
+        commandDelegate!.runInBackground { () -> Void  in
             if let module = module {
                 module.loginString = loginString
                 module.requestAccess({ (accessToken, error ) in
@@ -87,7 +87,7 @@ import Foundation
                     } else {
                         commandResult = CDVPluginResult(status: CDVCommandStatus_OK, messageAsString: accessToken as! String)
                     }
-                    self.commandDelegate.sendPluginResult(commandResult, callbackId: command.callbackId)
+                    self.commandDelegate!.sendPluginResult(commandResult, callbackId: command.callbackId)
                 })
             }
         }
@@ -97,7 +97,7 @@ import Foundation
         let accountId = command.arguments[0] as! String
         let module = AccountManager.getAccountByName(accountId)
 
-        commandDelegate.runInBackground { () -> Void  in
+        commandDelegate!.runInBackground { () -> Void  in
             if let module = module {
                 module.clearTokens()
 

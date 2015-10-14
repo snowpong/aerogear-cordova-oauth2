@@ -131,7 +131,7 @@ public class KeychainWrap {
     :param: tokenType       type of token: access, refresh
     */
     public func read(userAccount: String, tokenType: TokenType) -> NSString? {
-        var keychainQuery = NSMutableDictionary()
+        let keychainQuery = NSMutableDictionary()
         if let groupId = self.groupId {
             keychainQuery[kSecAttrAccessGroup as String] = groupId
         }
@@ -148,7 +148,7 @@ public class KeychainWrap {
 
         var dataTypeRef: Unmanaged<AnyObject>?
         // Search for the keychain items
-        let status: OSStatus = SecItemCopyMatching(keychainQuery, &dataTypeRef)
+        let status: OSStatus = withUnsafeMutablePointer(&dataTypeRef) { SecItemCopyMatching(keychainQuery as CFDictionaryRef, UnsafeMutablePointer($0)) }
         if (status == errSecItemNotFound) {
             print("\(tokenType.rawValue) not found")
             return nil
