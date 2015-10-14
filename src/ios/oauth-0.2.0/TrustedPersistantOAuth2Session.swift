@@ -285,7 +285,7 @@ public class TrustedPersistantOAuth2Session: OAuth2Session {
     */
     public var refreshTokenExpirationDate: NSDate? {
         get {
-            var dateAsString = self.keychain.read(self.accountId, tokenType: .RefreshExpirationDate)
+            let dateAsString = self.keychain.read(self.accountId, tokenType: .RefreshExpirationDate)
             if let unwrappedDate = dateAsString {
                 return NSDate(dateString: unwrappedDate as String)
             } else {
