@@ -29,7 +29,7 @@ import android.util.Log;
 
 import java.net.URI;
 import java.util.UUID;
-import org.apache.http.HttpStatus;
+import java.net.HttpURLConnection;
 
 import org.jboss.aerogear.android.core.Callback;
 import org.jboss.aerogear.android.pipe.module.AuthorizationFields;
@@ -197,8 +197,8 @@ public class OAuth2AuthzModule implements AuthzModule {
      */
     public boolean handleError(HttpException exception) {
 
-        if (exception.getStatusCode() == HttpStatus.SC_UNAUTHORIZED
-                || exception.getStatusCode() == HttpStatus.SC_FORBIDDEN) {
+        if (exception.getStatusCode() == HttpURLConnection.HTTP_UNAUTHORIZED
+                || exception.getStatusCode() == HttpURLConnection.HTTP_FORBIDDEN) {
             return isAuthorized() && refreshAccess();
         } else {
             return false;
